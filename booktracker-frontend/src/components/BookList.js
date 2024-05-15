@@ -1,21 +1,29 @@
+// src/components/BookList.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MagnifyingGlassIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 const BookList = ({ refresh }) => {
     const [books, setBooks] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: 'title', direction: 'ascending' });
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/books/')
-            .then(response => setBooks(response.data))
-            .catch(error => console.error(error));
-    }, [refresh]); // Fetch data when `refresh` changes
+        const fetchBooks = async () => {
+            try {
+                const token = localStorage.getItem('token'); // Get the token from localStorage
+                const response = await axios.get('http://127.0.0.1:8000/api/books/', {
+                    headers: {
+                        'Authorization': `Token ${token}` // Include the token in the headers
+                    }
+                });
+                setBooks(response.data);
+            } catch (error) {
+                console.error('Error fetching books', error);
+            }
+        };
 
-    const handleSearch = (event) => {
-        setSearchTerm(event.target.value);
-    };
+        fetchBooks();
+    }, [refresh]);
 
     const sortedBooks = [...books].sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -28,11 +36,11 @@ const BookList = ({ refresh }) => {
     });
 
     const filteredBooks = sortedBooks.filter(book =>
-        (book.title && book.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (book.author && book.author.toLowerCase().includes(searchTerm.toLowerCase()))
+        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const requestSort = (key) => {
+    const requestSort = key => {
         let direction = 'ascending';
         if (sortConfig.key === key && sortConfig.direction === 'ascending') {
             direction = 'descending';
@@ -41,54 +49,37 @@ const BookList = ({ refresh }) => {
     };
 
     return (
-        <div className="p-4 bg-white shadow rounded-lg">
+        <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">My Library</h1>
-            <div className="flex items-center mb-4">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 mr-2" />
-                <input
-                    type="text"
-                    placeholder="Search books..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="px-4 py-2 border rounded-lg w-full"
-                />
-            </div>
-            <table className="min-w-full bg-white">
+            <input
+                type="text"
+                placeholder="Search books..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="mb-4 px-3 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            />
+            <table className="min-w-full bg-white border rounded-md shadow-md">
                 <thead>
                     <tr>
                         <th
                             onClick={() => requestSort('title')}
-                            className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="cursor-pointer px-6 py-3 border-b-2 border-gray-300 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
                         >
-                            Title
-                            {sortConfig.key === 'title' && (
-                                sortConfig.direction === 'ascending' ?
-                                    <ChevronUpIcon className="h-5 w-5 inline ml-2" /> :
-                                    <ChevronDownIcon className="h-5 w-5 inline ml-2" />
-                            )}
+                            Title {sortConfig.key === 'title' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
                         </th>
                         <th
                             onClick={() => requestSort('author')}
-                            className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="cursor-pointer px-6 py-3 border-b-2 border-gray-300 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
                         >
-                            Author
-                            {sortConfig.key === 'author' && (
-                                sortConfig.direction === 'ascending' ?
-                                    <ChevronUpIcon className="h-5 w-5 inline ml-2" /> :
-                                    <ChevronDownIcon className="h-5 w-5 inline ml-2" />
-                            )}
+                            Author {sortConfig.key === 'author' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredBooks.map(book => (
                         <tr key={book.id}>
-                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                                {book.title || 'Untitled'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                                {book.author || 'Unknown Author'}
-                            </td>
+                            <td className="px-6 py-4 border-b border-gray-200 whitespace-no-wrap">{book.title || 'Untitled'}</td>
+                            <td className="px-6 py-4 border-b border-gray-200 whitespace-no-wrap">{book.author || 'Unknown Author'}</td>
                         </tr>
                     ))}
                 </tbody>

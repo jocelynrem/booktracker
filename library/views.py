@@ -1,53 +1,65 @@
-import requests
-from rest_framework import viewsets, status
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 from .models import Book
 from .serializers import BookSerializer
+from rest_framework import status
 
 
 class BookViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        isbn = request.data.get("isbn")
-        if not isbn:
+    def get_queryset(self):
+        return Book.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def register(request):
+    if request.method == "POST":
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
             return Response(
-                {"error": "ISBN is required"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Username and password are required"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        user = User.objects.create_user(username=username, password=password)
+        token = Token.objects.create(user=user)
+        return Response({"token": token.key}, status=status.HTTP_201_CREATED)
 
-        # Fetch book details from Open Library API
-        url = f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
-        response = requests.get(url)
-        print(f"API Response: {response.json()}")  # Debug log for API response
 
-        if response.status_code == 200:
-            data = response.json().get(f"ISBN:{isbn}", {})
-            if data:
-                title = data.get("title", "Unknown Title")
-                authors = (
-                    ", ".join([author["name"] for author in data.get("authors", [])])
-                    or "Unknown Author"
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def login(request):
+    if request.method == "POST":
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
+            return Response(
+                {"error": "Username and password are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                return Response(
+                    {"error": "Invalid credentials"},
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
-            else:
-                title = "Unknown Title"
-                authors = "Unknown Author"
-        else:
-            title = "Unknown Title"
-            authors = "Unknown Author"
-
-        book_data = {
-            "isbn": isbn,
-            "title": title,
-            "author": authors,
-        }
-
-        book, created = Book.objects.get_or_create(isbn=isbn, defaults=book_data)
-
-        if not created:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"token": token.key}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
             return Response(
-                {"error": "Book already exists"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
             )
-
-        serializer = self.get_serializer(book)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)

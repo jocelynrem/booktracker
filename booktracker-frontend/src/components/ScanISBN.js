@@ -1,3 +1,4 @@
+// src/components/ScanISBN.js
 import React, { useEffect, useRef } from 'react';
 import Quagga from 'quagga';
 import { PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
@@ -13,8 +14,8 @@ const ScanISBN = ({ onDetected, scanning, setScanning }) => {
                 type: "LiveStream",
                 target: scannerRef.current,
                 constraints: {
-                    width: 400, // Set desired width
-                    height: 300, // Set desired height
+                    width: 300, // Set desired width
+                    height: 200, // Set desired height
                 },
             },
             decoder: {
@@ -48,11 +49,12 @@ const ScanISBN = ({ onDetected, scanning, setScanning }) => {
     }, [scanning]);
 
     return (
-        <div className="flex flex-col items-right">
+        <div className="p-4 flex flex-col items-start">
             <Button
                 type="button"
                 onClick={scanning ? stopScanner : startScanner}
                 icon={scanning ? MinusIcon : PlusIcon}
+                className="bg-indigo-600 text-white hover:bg-indigo-500"
             >
                 {scanning ? "Stop Scanner" : "Start Scanner"}
             </Button>
@@ -60,8 +62,8 @@ const ScanISBN = ({ onDetected, scanning, setScanning }) => {
                 ref={scannerRef}
                 className="w-full mt-2"
                 style={{
-                    display: scanning ? 'flex' : 'none',
-                    width: '270px', // Set fixed width
+                    display: scanning ? 'block' : 'none',
+                    width: '300px', // Set fixed width
                     height: '200px', // Set fixed height
                     border: '1px solid #ccc', // Optional: Add border for better visibility
                     marginTop: '10px', // Add some space between the button and the scanner
