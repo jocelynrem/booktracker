@@ -11,6 +11,9 @@ const BookList = ({ refresh }) => {
         const fetchBooks = async () => {
             try {
                 const token = localStorage.getItem('token'); // Get the token from localStorage
+                if (!token) {
+                    throw new Error('No token found');
+                }
                 const response = await axios.get('http://127.0.0.1:8000/api/books/', {
                     headers: {
                         'Authorization': `Token ${token}` // Include the token in the headers

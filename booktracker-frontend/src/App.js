@@ -1,4 +1,6 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import Nav from './components/Nav';
 import BookList from './components/BookList';
@@ -34,19 +36,24 @@ const App = () => {
   }, []);
 
   return (
-    <div>
-      <Nav loggedIn={loggedIn} handleLoginLogout={loggedIn ? handleLogout : null} />
-      {!loggedIn ? (
-        <div className="flex justify-center mt-4">
-          <Login handleLogin={handleLogin} />
-        </div>
-      ) : (
-        <>
-          <ScanISBN scanning={scanning} setScanning={setScanning} onDetected={() => setRefresh(!refresh)} />
-          <BookList refresh={refresh} />
-        </>
-      )}
-    </div>
+    <Router>
+      <div>
+        <Nav loggedIn={loggedIn} handleLoginLogout={loggedIn ? handleLogout : null} />
+        <Routes>
+          <Route path="/login" element={!loggedIn ? <Login handleLogin={handleLogin} /> : <Navigate to="/books" />} />
+          <Route path="/register" element={!loggedIn ? <Register setLoggedIn={setLoggedIn} /> : <Navigate to="/books" />} />
+          <Route path="/books" element={loggedIn ? (
+            <>
+              <ScanISBN scanning={scanning} setScanning={setScanning} onDetected={() => setRefresh(!refresh)} />
+              <BookList refresh={refresh} />
+            </>
+          ) : (
+            <Navigate to="/login" />
+          )} />
+          <Route path="/" element={<Navigate to={loggedIn ? "/books" : "/login"} />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
