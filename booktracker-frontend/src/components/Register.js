@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';
+import config from '../config';  // Ensure this points to your config file
 
 const Register = ({ setLoggedIn }) => {
     const [firstName, setFirstName] = useState('');
