@@ -49,23 +49,21 @@ const ScanISBN = ({ onDetected, scanning, setScanning }) => {
     }, [scanning]);
 
     return (
-        <div className="p-4 flex flex-col items-start">
+        <div className="p-4 flex flex-col items-start w-full">
             <Button
                 type="button"
                 onClick={scanning ? stopScanner : startScanner}
                 icon={scanning ? MinusIcon : PlusIcon}
-                className="bg-indigo-600 text-white hover:bg-indigo-500"
+                className="bg-indigo-600 text-white hover:bg-indigo-500 w-full sm:w-auto"
             >
                 {scanning ? "Stop Scanner" : "Start Scanner"}
             </Button>
             <div
                 ref={scannerRef}
-                className="w-full mt-2"
+                className={`w-full mt-2 ${scanning ? 'block' : 'hidden'}`}
                 style={{
-                    display: scanning ? 'block' : 'none',
-                    width: '300px', // Set fixed width
                     height: '200px', // Set fixed height
-                    border: '1px solid #ccc', // Optional: Add border for better visibility
+                    // border: '1px solid #ccc', // Optional: Add border for better visibility
                     marginTop: '10px', // Add some space between the button and the scanner
                 }}
             />
