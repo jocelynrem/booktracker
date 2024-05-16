@@ -1,13 +1,13 @@
-# library/urls.py
-from django.urls import path, include
+from django.urls import path
+from .views import register, login, BookViewSet
 from rest_framework.routers import DefaultRouter
-from .views import BookViewSet, register, login
 
 router = DefaultRouter()
 router.register(r"books", BookViewSet, basename="book")
 
-urlpatterns = [
-    path("", include(router.urls)),
+urlpatterns = router.urls
+
+urlpatterns += [
     path("register/", register, name="register"),
     path("login/", login, name="login"),
 ]
