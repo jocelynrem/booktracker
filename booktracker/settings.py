@@ -25,7 +25,12 @@ SECRET_KEY = "django-insecure-)s0tktai!xfr2vyi6lk7a^hfd)xkz(vz345yo-kz9x!n!_2k!x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "booktracker.herokuapp.com"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "booktracker.herokuapp.com",
+    "jocelynrem.github.io",
+]
 
 # Application definition
 
