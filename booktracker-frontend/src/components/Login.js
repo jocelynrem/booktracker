@@ -1,8 +1,10 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import config from '../config';
 
-const Login = ({ handleLogin }) => {
+const Login = ({ handleLogin, setLoggedIn }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -10,8 +12,10 @@ const Login = ({ handleLogin }) => {
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            await handleLogin(username, password);
-            navigate('/books'); // Navigate to the books page on successful login
+            const response = await axios.post(`${config.baseURL}/login/`, { username, password });
+            localStorage.setItem('token', response.data.token);
+            setLoggedIn(true);
+            navigate('/books');
         } catch (error) {
             console.error('Login failed', error);
         }

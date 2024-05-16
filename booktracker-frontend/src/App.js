@@ -40,7 +40,7 @@ const App = () => {
       <div>
         <Nav loggedIn={loggedIn} handleLoginLogout={loggedIn ? handleLogout : null} />
         <Routes>
-          <Route path="/login" element={!loggedIn ? <Login handleLogin={handleLogin} /> : <Navigate to="/books" />} />
+          <Route path="/login" element={!loggedIn ? <Login handleLogin={handleLogin} setLoggedIn={setLoggedIn} /> : <Navigate to="/books" />} />
           <Route path="/register" element={!loggedIn ? <Register setLoggedIn={setLoggedIn} /> : <Navigate to="/books" />} />
           <Route path="/books" element={loggedIn ? (
             <>

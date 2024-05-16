@@ -1,6 +1,7 @@
 // src/components/BookList.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 
 const BookList = ({ refresh }) => {
     const [books, setBooks] = useState([]);
@@ -14,7 +15,7 @@ const BookList = ({ refresh }) => {
                 if (!token) {
                     throw new Error('No token found');
                 }
-                const response = await axios.get('http://127.0.0.1:8000/api/books/', {
+                const response = await axios.get(`${config.baseURL}/books/`, {
                     headers: {
                         'Authorization': `Token ${token}` // Include the token in the headers
                     }

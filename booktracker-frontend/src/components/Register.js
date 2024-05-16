@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '../config';
 
 const Register = ({ setLoggedIn }) => {
     const [firstName, setFirstName] = useState('');
@@ -17,14 +18,14 @@ const Register = ({ setLoggedIn }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                await axios.post('http://127.0.0.1:8000/api/register/', {
+                await axios.post(`${config.baseURL}/register/`, {
                     first_name: firstName,
                     last_name: lastName,
                     email,
                     username,
                     password
                 });
-                const response = await axios.post('http://127.0.0.1:8000/api/login/', { username, password });
+                const response = await axios.post(`${config.baseURL}/login/`, { username, password });
                 localStorage.setItem('token', response.data.token);
                 setLoggedIn(true);
                 navigate('/books'); // Navigate to the books page on successful registration
