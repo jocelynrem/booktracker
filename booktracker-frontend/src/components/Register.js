@@ -1,8 +1,7 @@
-// src/components/Register.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '../config';  // Ensure this points to your config file
+import config from '../config';
 
 const Register = ({ setLoggedIn }) => {
     const [firstName, setFirstName] = useState('');
@@ -28,10 +27,19 @@ const Register = ({ setLoggedIn }) => {
                 const response = await axios.post(`${config.baseURL}/login/`, { username, password });
                 localStorage.setItem('token', response.data.token);
                 setLoggedIn(true);
-                navigate('/books'); // Navigate to the books page on successful registration
+                navigate('/books');
             } catch (error) {
                 console.error('Registration failed', error);
-                setErrors({ general: 'Registration failed. Please try again.' });
+                if (error.response) {
+                    // Server responded with a status other than 200 range
+                    setErrors({ general: `Registration failed: ${error.response.data}` });
+                } else if (error.request) {
+                    // Request was made but no response was received
+                    setErrors({ general: 'No response from server. Please try again later.' });
+                } else {
+                    // Something else happened while setting up the request
+                    setErrors({ general: `Error: ${error.message}` });
+                }
             }
         }
     };
