@@ -129,39 +129,4 @@ const Register = ({ setLoggedIn }) => {
                         className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.password ? 'border-red-500' : ''}`}
                     />
                     {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
-                    <p className="text-gray-600 text-xs italic mt-1">Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.</p>
-                </div>
-                <div className="mb-6">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
-                        Confirm Password
-                    </label>
-                    <input
-                        id="confirmPassword"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                    />
-                    {errors.confirmPassword && <p className="text-red-500 text-xs italic">{errors.confirmPassword}</p>}
-                </div>
-                <div className="flex items-center justify-between">
-                    <button
-                        type="submit"
-                        className="bg-indigo-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    >
-                        Register
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => navigate('/login')}
-                        className="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800"
-                    >
-                        Back to Login
-                    </button>
-                </div>
-            </form>
-        </div>
-    );
-};
-
-export default Register;
+                    <p className="text-gray-600 text-xs italic mt-1">Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter,
