@@ -11,6 +11,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "booktracker-eade18e52547.herokuapp.com",
+    "jocelynrem.github.io",
 ]
 
 INSTALLED_APPS = [
@@ -42,14 +43,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://jocelynrem.github.io",
-    "https://jocelynrem.github.io/booktracker/",
+    "https://jocelynrem.github.io/booktracker",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://jocelynrem.github.io",
-    "https://jocelynrem.github.io/booktracker/",
+    "https://jocelynrem.github.io/booktracker",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
