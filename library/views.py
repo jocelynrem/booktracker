@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Book
 from .serializers import BookSerializer, UserSerializer
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -19,9 +21,18 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-@api_view(["POST"])
+@csrf_exempt
+@api_view(["POST", "OPTIONS"])
 @permission_classes([permissions.AllowAny])
 def register(request):
+    if request.method == "OPTIONS":
+        response = Response(status=status.HTTP_200_OK)
+        response["Allow"] = "POST, OPTIONS"
+        response["Access-Control-Allow-Origin"] = "https://jocelynrem.github.io"
+        response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
+
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
